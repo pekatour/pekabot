@@ -15,11 +15,13 @@ class MyClient(discord.Client):
 
         # attributes
         self.counter = 0
+        self.m_channel = self.get_channel(1268133554253205576)
         self.words = [["youre", "you're"], ["im", "i'm"], ["Im", "I'm"], ["hes", "he's"], ["shes", "she's"]]
 
     async def setup_hook(self) -> None:
         # start the task to run in the background
-        self.my_background_task.start()
+        # self.random_task.start()
+        None
 
     async def on_ready(self):
         print(f'Logged in as {self.user} (ID: {self.user.id})')
@@ -28,19 +30,19 @@ class MyClient(discord.Client):
     async def on_message(self,message):
         if message.author == client.user:
             return
-        for word in words:
+        for word in self.words:
             if word[0] in message.content:
                 await message.channel.send(str(message.author) + ", you misspelled " + word[1] + " as " + word[0], reference=message)
 
     @tasks.loop(seconds=10)  # task runs every +-10 seconds
-    async def my_background_task(self):
-        self.my_background_task.change_interval(seconds=10+ random.randint(-10, 10))
-        print(str(self.my_background_task.seconds))
-        channel = self.get_channel(1268133554253205576)  # channel ID goes here
-        self.counter += 1
-        await channel.send(self.counter)
+    async def random_task(self):
+        self.random_task.change_interval(seconds=10+ random.randint(-10, 10))
+        # print(str(self.random_task.seconds))
 
-    @my_background_task.before_loop
+        self.counter += 1
+        await self.m_channel.send(self.counter)
+
+    @random_task.before_loop
     async def before_my_task(self):
         await self.wait_until_ready()  # wait until the bot logs in
 
